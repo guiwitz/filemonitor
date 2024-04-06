@@ -25,11 +25,13 @@ class Watcher:
     CHECK_INTERVAL = 1  # Check every hour (3600 seconds).
     #EMAIL_SEND_INTERVAL = 10  # Send an email every hour if no new file is added.
 
-    def __init__(self, directory_to_watch=None, max_sec_no_file=30, current_label=None):
+    def __init__(self, directory_to_watch=None, max_sec_no_file=30,
+                 current_label=None, last_file_label=None):
         self.observer = Observer()
         self.last_modified_time = datetime.now()
         self.last_email_sent_time = None
         self.current_label = current_label
+        self.last_file_label = last_file_label
 
         self.max_sec_no_file = max_sec_no_file
         self.directory_to_watch = directory_to_watch
@@ -38,6 +40,7 @@ class Watcher:
         self.email_recipient = ''
         self.email_sender = ''
         self.email_password = ''
+        self.last_file_created = ''
 
     #@run_in_thread
     async def run(self):
@@ -49,30 +52,38 @@ class Watcher:
                 await asyncio.sleep(self.CHECK_INTERVAL)
                 if (datetime.now() - self.last_modified_time > timedelta(seconds=self.max_sec_no_file) and
                         (self.last_email_sent_time is None or datetime.now() - self.last_email_sent_time > timedelta(seconds=self.max_sec_no_file))):
-                    self.send_email()
+                    email_return = self.send_email()
                     self.running = False
                     self.observer.stop()
-                    return "Email sent"
+                    return email_return
+                else:
+                    self.last_file_label.text = f'Last File Created: {self.last_file_created}'
         except KeyboardInterrupt:
             self.observer.stop()
+            return "Monitoring interrupted"
         
         self.observer.join()
 
     # send_email remains the same ...
     def send_email(self):
-        msg = MIMEText("No new files added in the last hour.")
+        
+        if self.email_recipient == '':
+            return "Email not sent. Please provide email recipient, sender, and password."
+        msg = MIMEText(f"No new files added in the last {self.max_sec_no_file} seconds. Last file was {self.last_file_created}.")
         msg['Subject'] = 'Alert: No new files detected'
         msg['From'] = self.email_sender
         msg['To'] = self.email_recipient
 
-        # Set up the SMTP server
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(self.email_sender, self.email_password)
-        server.send_message(msg)
-        server.quit()
-
-        print("Email sent")
+        try:
+            # Set up the SMTP server
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(self.email_sender, self.email_password)
+            server.send_message(msg)
+            server.quit()
+            return "Email sent"
+        except Exception as e:
+            return f"Email not sent. An error occurred: {e}"
 
 class Handler(FileSystemEventHandler):
     def __init__(self, watcher):
@@ -85,4 +96,5 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             # When a file is created, update the last_modified_time of the watcher.
             print(f"Received created event - {event.src_path}.")
+            self.watcher.last_file_created = event.src_path
             self.watcher.last_modified_time = datetime.now()
