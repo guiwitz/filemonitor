@@ -13,10 +13,10 @@ class Filemonitor(toga.App):
         
         self.folder = None
         main_box = toga.Box(style=Pack(direction=COLUMN))
-        options_box = toga.Box(style=Pack(direction=ROW))
-        start_stop_box = toga.Box(style=Pack(direction=ROW))
-        status_box = toga.Box(style=Pack(direction=ROW))
-        self.email_box = toga.Box(style=Pack(direction=ROW))
+        options_box = toga.Box(style=Pack(direction=ROW, padding=20))
+        start_stop_box = toga.Box(style=Pack(direction=ROW, padding=20))
+        status_box = toga.Box(style=Pack(direction=COLUMN, padding=20))
+        self.email_box = toga.Box(style=Pack(direction=COLUMN, padding=20))
 
 
         self.time_label = toga.Label('Max Time Interval (in seconds): ')
@@ -27,6 +27,7 @@ class Filemonitor(toga.App):
 
         self.display_folder_label = toga.Label('Folder: ')
         self.display_current_state_label = toga.Label('Current State: ')
+        self.last_file_created_label = toga.Label('Last File Created: ')
 
         self.email_recipient_label = toga.Label('Email Destination: ')
         self.email_recipient = toga.TextInput()
@@ -42,6 +43,7 @@ class Filemonitor(toga.App):
         start_stop_box.add(self.stop_monitor_btn)
         status_box.add(self.display_folder_label)
         status_box.add(self.display_current_state_label)
+        status_box.add(self.last_file_created_label)
 
         self.email_box.add(self.email_recipient_label)
         self.email_box.add(self.email_recipient)
@@ -68,8 +70,10 @@ class Filemonitor(toga.App):
 
         self.watcher = Watcher(
             max_sec_no_file=float(self.max_sec_no_file.value),
-            directory_to_watch=self.folder, current_label=self.display_current_state_label)
+            directory_to_watch=self.folder, current_label=self.display_current_state_label,
+            last_file_label=self.last_file_created_label)
         self.display_folder_label.text = f'Folder: {self.folder}'
+        self.display_current_state_label.text = f'Current State: Monitoring...'
         self.watcher.running = True
         self.watcher.email_recipient =self.email_recipient.value
         self.watcher.email_recipient = self.watcher.email_recipient.replace(u'\xa0', u' ')
@@ -78,7 +82,9 @@ class Filemonitor(toga.App):
         self.watcher.email_password = self.password.value
         self.watcher.email_password = self.watcher.email_password.replace(u'\xa0', u' ')
         output = await self.watcher.run()
-        self.display_current_state_label.text = output
+        self.display_current_state_label.text = f'Current State: {output}'
+        if output != "Email sent":
+            self.watcher.observer.stop()
 
     def stop_monitoring(self, widget):
         self.watcher.running = False
