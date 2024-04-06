@@ -41,7 +41,7 @@ jobs:
 
       - name: Package Mac
         if: runner.os == 'macOS'
-        run: briefcase package --no-sign
+        run: briefcase package --adhoc-sign
 
       - name: Package Windows / Linux
         run: briefcase package
