@@ -75,5 +75,5 @@ jobs:
           prerelease: true
           name: nightly
           tag_name: nightly
-          files: filemonitor-main-windows-latest.msi
+          files: '**/*msi'
           fail_on_unmatched_files: true
