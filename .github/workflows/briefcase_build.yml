@@ -66,3 +66,13 @@ jobs:
         with:
           name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.msi
           path: '**/*.msi'
+
+      - name: Release nightly
+        uses: softprops/action-gh-release@v1
+        if: runner.os == 'Windows'
+        with:
+          prerelease: true
+          name: nightly
+          tag_name: nightly
+          files: filemonitor-main-windows-latest.msi
+          fail_on_unmatched_files: true
