@@ -9,6 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
+  permissions:
+    contents: write
   briefcase:
     name: Bundle on ${{ matrix.platform }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.platform }}
