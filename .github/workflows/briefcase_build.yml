@@ -37,6 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install briefcase
 
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcairo2-dev libgirepository1.0-dev
+
       - name: Create and Build Bundle
         run: |
           briefcase create
