@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         #platform: [ubuntu-latest, windows-latest, macos-latest]
-        platform: [windows-latest]
+        platform: [windows-latest, ubuntu-latest]
         python-version: ["3.11"]
       fail-fast: false
     defaults:
@@ -47,6 +47,7 @@ jobs:
         run: briefcase package --adhoc-sign
 
       - name: Package Windows / Linux
+        if: runner.os == 'Windows' || runner.os == 'Linux'
         run: briefcase package
 
       - name: Upload Artifact for Linux
@@ -70,8 +71,8 @@ jobs:
           name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.msi
           path: '**/*.msi'
 
-      - name: Release nightly
-        uses: softprops/action-gh-release@v1
+      - name: Release nightly Windows
+        uses: softprops/action-gh-release@v2
         if: runner.os == 'Windows'
         with:
           prerelease: true
@@ -79,3 +80,16 @@ jobs:
           tag_name: nightly
           files: '**/*.msi'
           fail_on_unmatched_files: true
+
+      - name: Release nightly Linux
+        uses: softprops/action-gh-release@v2
+        if: runner.os == 'Linux'
+        with:
+          prerelease: true
+          name: nightly
+          tag_name: nightly
+          files: '**/*.AppImage'
+          fail_on_unmatched_files: true
+
+
+      
