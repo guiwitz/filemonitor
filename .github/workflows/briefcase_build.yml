@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v[0-9].*'
+      - 'v.*'
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         #platform: [ubuntu-latest, windows-latest, macos-latest]
-        platform: [windows-latest, ubuntu-latest]
+        platform: [windows-latest, ubuntu-22.04]
         python-version: ["3.11"]
       fail-fast: false
     defaults:
@@ -94,8 +94,27 @@ jobs:
           prerelease: true
           name: nightly
           tag_name: nightly
-          files: '**/*.AppImage'
+          files: '**/*.deb'
           fail_on_unmatched_files: true
 
+      - name: Release nightly Linux
+        uses: softprops/action-gh-release@v2
+        if: contains(github.ref, 'tags') && runner.os == 'Linux'
+        with:
+          prerelease: true
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: '**/*.deb'
+          fail_on_unmatched_files: true
+          
+      - name: Release nightly Windows
+        uses: softprops/action-gh-release@v2
+        if: contains(github.ref, 'tags') && runner.os == 'Windows'
+        with:
+          prerelease: true
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: '**/*.msi'
+          fail_on_unmatched_files: true
 
       
