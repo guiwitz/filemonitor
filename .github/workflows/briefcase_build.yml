@@ -51,21 +51,21 @@ jobs:
         run: briefcase package
 
       - name: Upload Artifact for Linux
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: runner.os == 'Linux'
         with:
           name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.AppImage
           path: '**/*.AppImage'
 
       - name: Upload Artifact for MacOS
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: runner.os == 'MacOS'
         with:
           name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.dmg
           path: '**/*.dmg'
 
       - name: Upload Artifact for Windows
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: runner.os == 'Windows'
         with:
           name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.msi
