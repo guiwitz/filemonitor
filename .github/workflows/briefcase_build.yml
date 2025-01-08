@@ -56,44 +56,44 @@ jobs:
         if: runner.os == 'Windows' || runner.os == 'Linux'
         run: briefcase package
 
-      - name: Release nightly Windows
-        uses: softprops/action-gh-release@v2
-        if: runner.os == 'Windows'
-        with:
-          prerelease: true
-          name: nightly
-          tag_name: nightly
-          files: '**/*.msi'
-          fail_on_unmatched_files: true
+      # - name: Release nightly Windows
+      #   uses: softprops/action-gh-release@v2
+      #   if: runner.os == 'Windows'
+      #   with:
+      #     prerelease: true
+      #     name: nightly
+      #     tag_name: nightly
+      #     files: '**/*.msi'
+      #     fail_on_unmatched_files: true
 
-      - name: Release nightly Linux
-        uses: softprops/action-gh-release@v2
-        if: runner.os == 'Linux'
-        with:
-          prerelease: true
-          name: nightly
-          tag_name: nightly
-          files: '**/*.deb'
-          fail_on_unmatched_files: true
+      # - name: Release nightly Linux
+      #   uses: softprops/action-gh-release@v2
+      #   if: runner.os == 'Linux'
+      #   with:
+      #     prerelease: true
+      #     name: nightly
+      #     tag_name: nightly
+      #     files: '**/*.deb'
+      #     fail_on_unmatched_files: true
       
       - name: Release versioned Windows
         uses: softprops/action-gh-release@v2
         if: contains(github.ref, 'tags') && runner.os == 'Windows'
         with:
           prerelease: true
-          name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
+          #name: ${{ github.ref_name }}
+          #tag_name: ${{ github.ref_name }}
           files: '**/*.msi'
-          fail_on_unmatched_files: true
+          #fail_on_unmatched_files: true
 
       - name: Release versioned Linux
         uses: softprops/action-gh-release@v2
         if: contains(github.ref, 'tags') && runner.os == 'Linux'
         with:
           prerelease: true
-          name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
+          #name: ${{ github.ref_name }}
+          #tag_name: ${{ github.ref_name }}
           files: '**/*.deb'
-          fail_on_unmatched_files: true
+          #fail_on_unmatched_files: true
 
       
