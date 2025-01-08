@@ -16,7 +16,7 @@ jobs:
       matrix:
         #platform: [ubuntu-latest, windows-latest, macos-latest]
         platform: [windows-latest, ubuntu-22.04]
-        python-version: ["3.10"]
+        python-version: ["3.10", "3.12"]
       fail-fast: false
     defaults:
       run:
@@ -30,7 +30,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Python libs
         run: |
@@ -55,6 +55,11 @@ jobs:
       - name: Package Windows / Linux
         if: runner.os == 'Windows' || runner.os == 'Linux'
         run: briefcase package
+
+      - name: Rename artefacts with python version
+        run: |
+          mv dist/*.msi dist/${{ matrix.python-version}}.msi
+          mv dist/*.deb dist/${{ matrix.python-version}}.deb
 
       # - name: Release nightly Windows
       #   uses: softprops/action-gh-release@v2
