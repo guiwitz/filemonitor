@@ -2,7 +2,7 @@
 [tool.briefcase]
 project_name = "filemonitor"
 bundle = "ch.unibe"
-version = "0.0.1"
+version = "0.1.2"
 url = "https://unibe.ch/filemonitor"
 license = "BSD license"
 author = "Guillaume Witz"
