@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v.*'
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -56,27 +56,6 @@ jobs:
         if: runner.os == 'Windows' || runner.os == 'Linux'
         run: briefcase package
 
-      - name: Upload Artifact for Linux
-        uses: actions/upload-artifact@v4
-        if: runner.os == 'Linux'
-        with:
-          name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.deb
-          path: '**/*.AppImage'
-
-      - name: Upload Artifact for MacOS
-        uses: actions/upload-artifact@v4
-        if: runner.os == 'MacOS'
-        with:
-          name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.dmg
-          path: '**/*.dmg'
-
-      - name: Upload Artifact for Windows
-        uses: actions/upload-artifact@v4
-        if: runner.os == 'Windows'
-        with:
-          name: filemonitor-${{ github.ref_name }}-${{ matrix.platform }}.msi
-          path: '**/*.msi'
-
       - name: Release nightly Windows
         uses: softprops/action-gh-release@v2
         if: runner.os == 'Windows'
@@ -96,18 +75,8 @@ jobs:
           tag_name: nightly
           files: '**/*.deb'
           fail_on_unmatched_files: true
-
-      - name: Release nightly Linux
-        uses: softprops/action-gh-release@v2
-        if: contains(github.ref, 'tags') && runner.os == 'Linux'
-        with:
-          prerelease: true
-          name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          files: '**/*.deb'
-          fail_on_unmatched_files: true
-          
-      - name: Release nightly Windows
+      
+      - name: Release versioned Windows
         uses: softprops/action-gh-release@v2
         if: contains(github.ref, 'tags') && runner.os == 'Windows'
         with:
@@ -115,6 +84,16 @@ jobs:
           name: ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           files: '**/*.msi'
+          fail_on_unmatched_files: true
+
+      - name: Release versioned Linux
+        uses: softprops/action-gh-release@v2
+        if: contains(github.ref, 'tags') && runner.os == 'Linux'
+        with:
+          prerelease: true
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: '**/*.deb'
           fail_on_unmatched_files: true
 
       
