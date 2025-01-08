@@ -16,7 +16,7 @@ jobs:
       matrix:
         #platform: [ubuntu-latest, windows-latest, macos-latest]
         platform: [windows-latest, ubuntu-22.04]
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.10"]
       fail-fast: false
     defaults:
       run:
@@ -58,8 +58,12 @@ jobs:
 
       - name: Rename artefacts with python version
         run: |
-          mv dist/*.msi dist/${{ matrix.python-version}}.msi
-          mv dist/*.deb dist/${{ matrix.python-version}}.deb
+          for f in dist/*.msi; do
+            mv "$f" "${f%.msi}-${{ matrix.python-version }}.msi"
+          done
+          for f in dist/*.deb; do
+            mv "$f" "${f%.deb}-${{ matrix.python-version }}.deb"
+          done
 
       # - name: Release nightly Windows
       #   uses: softprops/action-gh-release@v2
